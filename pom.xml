@@ -11,10 +11,19 @@
 	<url>http://maven.apache.org</url>
 
 	<properties>
+		<rootDir>${project.basedir}</rootDir>
+		<qualityRulesBase>${rootDir}/src/main/resources/quality-rules</qualityRulesBase>
+
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<spring.version>3.2.1.RELEASE</spring.version>
 		<postgres.version>9.0-801.jdbc4</postgres.version>
+		<c3p0.version>0.9.1.2</c3p0.version>
+		<junit.version>4.8.2</junit.version>
+		<mockito.version>1.9.5</mockito.version>
 		<java.major.version>1.6</java.major.version>
+		<checkstyle.version>2.5</checkstyle.version>
+		<pmd.version>2.5</pmd.version>
+		<findbugs.version>2.3.1</findbugs.version>
 	</properties>
 
 	<dependencies>
@@ -46,18 +55,18 @@
 		<dependency>
 			<groupId>c3p0</groupId>
 			<artifactId>c3p0</artifactId>
-			<version>0.9.1.2</version>
+			<version>${c3p0.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.8.2</version>
+			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
-			<version>1.9.5</version>
+			<version>${mockito.version}</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -77,8 +86,68 @@
 						<showDeprecation>true</showDeprecation>
 					</configuration>
 				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-checkstyle-plugin</artifactId>
+					<version>${checkstyle.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>findbugs-maven-plugin</artifactId>
+					<version>${findbugs.version}</version>
+				</plugin>
+				<plugin>
+					<artifactId>maven-pmd-plugin</artifactId>
+					<version>${pmd.version}</version>
+				</plugin>
+
 			</plugins>
 		</pluginManagement>
 	</build>
+
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>${checkstyle.version}</version>
+				<configuration>
+					<failOnViolation>false</failOnViolation>
+					<violationSeverity>info</violationSeverity>
+					<configLocation>${qualityRulesBase}/checkstyle.xml</configLocation>
+					<includeTestSourceDirectory>true</includeTestSourceDirectory>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+				<version>${pmd.version}</version>
+				<configuration>
+					<targetJdk>${java.major.version}</targetJdk>
+					<minimumTokens>100</minimumTokens>
+					<minimumPriority>4</minimumPriority>
+					<rulesets>
+						<ruleset>${qualityRulesBase}/pmd.xml</ruleset>
+					</rulesets>
+					<includeTests>true</includeTests>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>findbugs-maven-plugin</artifactId>
+				<version>${findbugs.version}</version>
+				<configuration>
+					<xmlOutput>true</xmlOutput>
+					<findbugsXmlOutput>false</findbugsXmlOutput>
+					<threshold>Low</threshold>
+					<effort>Max</effort>
+					<includeFilterFile>${qualityRulesBase}/findbugs.xml</includeFilterFile>
+					<maxHeap>1536</maxHeap>
+					<includeTests>false</includeTests>
+				</configuration>
+			</plugin>
+		</plugins>
+	</reporting>
 
 </project>
