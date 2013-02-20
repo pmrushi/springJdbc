@@ -21,11 +21,13 @@ public class EmployeeDAOImpl extends JdbcDaoSupport implements EmployeeDAO {
     private static final String INSERT_QUERY = "INSERT INTO employee(firstname, lastname, birth_date, dept_id) VALUES (?,?,?,?)";
     private static final String EMP_LIST_QUERY = "SELECT emp_id,firstname, lastname, birth_date, dept_id FROM employee";
 
+    @Override
     public void save(Employee employee) {
         getJdbcTemplate().update(INSERT_QUERY,
                 new Object[]{employee.getFirstname(), employee.getLastname(), employee.getBirthDate(), employee.getDeptId()});
     }
 
+    @Override
     public long saveAndReturnKey(final Employee employee) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         getJdbcTemplate().update(new PreparedStatementCreator() {
@@ -42,15 +44,18 @@ public class EmployeeDAOImpl extends JdbcDaoSupport implements EmployeeDAO {
         return (key != null) ? key.longValue() : 0;
     }
 
+    @Override
     public Employee get(long empId) {
         String query = EMP_LIST_QUERY + " WHERE emp_id=?";
         return (Employee) getJdbcTemplate().queryForObject(query, new Object[]{empId}, new EmpRowMapper());
     }
 
+    @Override
     public List<Employee> list() {
         return getJdbcTemplate().query(EMP_LIST_QUERY, new EmpRowMapper());
     }
 
+    @Override
     public int[] bulkInsert(final List<Employee> empList) {
         List<Object[]> employeeBatch = new ArrayList<Object[]>();
         for (Employee employee : empList) {
