@@ -25,6 +25,7 @@
 		<pmd.version>3.0</pmd.version>
 		<findbugs.version>2.5.2</findbugs.version>
 		<cobertura.version>2.5.2</cobertura.version>
+		<sonar.version>3.4.1</sonar.version>
 	</properties>
 
 	<dependencies>
@@ -111,6 +112,12 @@
 					<version>${cobertura.version}</version>
 				</plugin>
 
+				<plugin>
+					<groupId>org.codehaus.sonar</groupId>
+					<artifactId>sonar-maven-plugin</artifactId>
+					<version>${sonar.version}</version>
+				</plugin>
+
 			</plugins>
 		</pluginManagement>
 	</build>
@@ -178,5 +185,20 @@
 
 		</plugins>
 	</reporting>
+	
+	<profiles>
+		<profile>
+			<id>sonar</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.sonar</groupId>
+						<artifactId>sonar-maven-plugin</artifactId>
+						<version>${sonar.version}</version>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 </project>
