@@ -9,10 +9,10 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,11 +32,12 @@ public class EmployeeDAOImpl extends JdbcDaoSupport implements EmployeeDAO {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         getJdbcTemplate().update(new PreparedStatementCreator() {
             public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+                int parameterIndex = 1;
                 PreparedStatement preparedStatement = con.prepareStatement(INSERT_QUERY, new String[]{"emp_id"});
-                preparedStatement.setString(1, employee.getFirstname());
-                preparedStatement.setString(2, employee.getLastname());
-                preparedStatement.setDate(3, new Date(employee.getBirthDate().getTime()));
-                preparedStatement.setLong(4, employee.getDeptId());
+                preparedStatement.setString(parameterIndex++, employee.getFirstname());
+                preparedStatement.setString(parameterIndex++, employee.getLastname());
+                preparedStatement.setTimestamp(parameterIndex++, new Timestamp(employee.getBirthDate().getTime()));
+                preparedStatement.setLong(parameterIndex++, employee.getDeptId());
                 return preparedStatement;
             }
         }, keyHolder);
@@ -59,13 +60,13 @@ public class EmployeeDAOImpl extends JdbcDaoSupport implements EmployeeDAO {
     public int[] bulkInsert(final List<Employee> empList) {
         List<Object[]> employeeBatch = new ArrayList<Object[]>();
         for (Employee employee : empList) {
-            Object[] values = new Object[]{employee.getFirstname(), employee.getLastname(), employee.getBirthDate(), employee.getDeptId()};
+            Object[] values = new Object[]{employee.getFirstname(), employee.getLastname(), employee.getBirthDate(), employee.getDeptId()}; // NOPMD
             employeeBatch.add(values);
         }
         return getJdbcTemplate().batchUpdate(INSERT_QUERY, employeeBatch);
     }
 
-    private class EmpRowMapper implements RowMapper<Employee> {
+    private static class EmpRowMapper implements RowMapper<Employee> {
         public Employee mapRow(ResultSet rs, int rowNum) throws SQLException {
             return mapEmployee(rs);
         }

@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -23,33 +24,35 @@ import java.util.List;
 @TransactionConfiguration(defaultRollback = true)
 public class EmployeeServiceIntegrationTest {
 
+    private static final String DATE_FORMAT = "yyyy-MM-dd";
+    private static final int EMP_COUNT = 3;
     private static final long DEPT_ID = 1L;
     private static final String BIRTH_DATE = "1981-08-19";
- 
+
     @Autowired
     private EmployeeService employeeService;
 
     @Test
     public void shouldPersistBulkEmployees() {
-        List<Employee> empList = new ArrayList<Employee>(3);
+        List<Employee> empList = new ArrayList<Employee>(EMP_COUNT);
         empList.add(createEmployee("fname1", "lname1", BIRTH_DATE, DEPT_ID));
         empList.add(createEmployee("fname2", "lname2", BIRTH_DATE, DEPT_ID));
         empList.add(createEmployee("fname3", "lname3", BIRTH_DATE, DEPT_ID));
         employeeService.bulkInsert(empList);
         List<Employee> employees = employeeService.list();
         int counter = 1;
-        assertEquals(3, employees.size());
+        assertEquals(EMP_COUNT, employees.size());
         for (Employee employee : employees) {
             assertEquals("fname" + counter, employee.getFirstname());
             assertEquals("lname" + counter, employee.getLastname());
-            assertEquals(BIRTH_DATE, employee.getBirthDate().toString());
+            assertEquals(formatBirthDate(), employee.getBirthDate());
             assertEquals(Long.valueOf(DEPT_ID), employee.getDeptId());
             counter++;
         }
     }
 
     @Test
-    public void shouldPersistEmployee() {
+    public void shouldPersistEmployee() throws ParseException {
         long key = employeeService.saveAndReturnKey(createEmployee("Scott", "Tiger", BIRTH_DATE, DEPT_ID));
         assertEmployee(employeeService.get(key));
     }
@@ -57,8 +60,16 @@ public class EmployeeServiceIntegrationTest {
     private void assertEmployee(Employee employee) {
         assertEquals("Scott", employee.getFirstname());
         assertEquals("Tiger", employee.getLastname());
-        assertEquals(BIRTH_DATE, employee.getBirthDate().toString());
+        assertEquals(formatBirthDate(), employee.getBirthDate());
         assertEquals(Long.valueOf(DEPT_ID), employee.getDeptId());
+    }
+
+    private Date formatBirthDate() {
+        try {
+            return new SimpleDateFormat(DATE_FORMAT).parse(BIRTH_DATE);
+        } catch (ParseException e) {
+        }
+        return null;
     }
 
     private Employee createEmployee(String firstName, String lastName, String birthDate, long deptId) {
@@ -66,7 +77,7 @@ public class EmployeeServiceIntegrationTest {
         employee.setFirstname(firstName);
         employee.setLastname(lastName);
         try {
-            employee.setBirthDate(new SimpleDateFormat("yyyy-MM-dd").parse(birthDate));
+            employee.setBirthDate(new SimpleDateFormat(DATE_FORMAT).parse(birthDate));
         } catch (ParseException e) {
         }
         employee.setDeptId(deptId);
