@@ -21,9 +21,9 @@
 		<junit.version>4.8.2</junit.version>
 		<mockito.version>1.9.5</mockito.version>
 		<java.major.version>1.6</java.major.version>
-		<checkstyle.version>2.5</checkstyle.version>
-		<pmd.version>2.5</pmd.version>
-		<findbugs.version>2.3.1</findbugs.version>
+		<checkstyle.version>2.9.1</checkstyle.version>
+		<pmd.version>3.0</pmd.version>
+		<findbugs.version>2.5.2</findbugs.version>
 	</properties>
 
 	<dependencies>
@@ -97,7 +97,9 @@
 					<artifactId>findbugs-maven-plugin</artifactId>
 					<version>${findbugs.version}</version>
 				</plugin>
+
 				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-pmd-plugin</artifactId>
 					<version>${pmd.version}</version>
 				</plugin>
@@ -112,6 +114,13 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
 				<version>${checkstyle.version}</version>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>checkstyle-aggregate</report>
+						</reports>
+					</reportSet>
+				</reportSets>
 				<configuration>
 					<failOnViolation>false</failOnViolation>
 					<violationSeverity>info</violationSeverity>
