@@ -18,6 +18,7 @@
 		<spring.version>3.2.1.RELEASE</spring.version>
 		<postgres.version>9.1-901.jdbc4</postgres.version>
 		<c3p0.version>0.9.1.2</c3p0.version>
+		<log4j.version>1.2.17</log4j.version>
 		<junit.version>4.11</junit.version>
 		<mockito.version>1.9.5</mockito.version>
 		<java.major.version>1.6</java.major.version>
@@ -58,6 +59,11 @@
 			<groupId>c3p0</groupId>
 			<artifactId>c3p0</artifactId>
 			<version>${c3p0.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>${log4j.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -185,7 +191,7 @@
 
 		</plugins>
 	</reporting>
-	
+
 	<profiles>
 		<profile>
 			<id>sonar</id>

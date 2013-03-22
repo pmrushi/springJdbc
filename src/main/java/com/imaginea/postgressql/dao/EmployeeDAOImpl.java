@@ -2,6 +2,7 @@ package com.imaginea.postgressql.dao;
 
 import com.imaginea.postgressql.beans.Employee;
 
+import org.apache.log4j.Logger;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
@@ -21,8 +22,11 @@ public class EmployeeDAOImpl extends JdbcDaoSupport implements EmployeeDAO {
     private static final String INSERT_QUERY = "INSERT INTO employee(firstname, lastname, birth_date, dept_id) VALUES (?,?,?,?)";
     private static final String EMP_LIST_QUERY = "SELECT emp_id,firstname, lastname, birth_date, dept_id FROM employee";
 
+    private static Logger LOGGER = Logger.getLogger(EmployeeDAOImpl.class);
+
     @Override
     public void save(Employee employee) {
+        logDebugMessage("Employee insert query=", INSERT_QUERY);
         getJdbcTemplate().update(INSERT_QUERY,
                 new Object[]{employee.getFirstname(), employee.getLastname(), employee.getBirthDate(), employee.getDeptId()});
     }
@@ -33,6 +37,7 @@ public class EmployeeDAOImpl extends JdbcDaoSupport implements EmployeeDAO {
         getJdbcTemplate().update(new PreparedStatementCreator() {
             public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
                 int parameterIndex = 1;
+                logDebugMessage("Employee insert query=", INSERT_QUERY);
                 PreparedStatement preparedStatement = con.prepareStatement(INSERT_QUERY, new String[]{"emp_id"});
                 preparedStatement.setString(parameterIndex++, employee.getFirstname());
                 preparedStatement.setString(parameterIndex++, employee.getLastname());
@@ -48,11 +53,19 @@ public class EmployeeDAOImpl extends JdbcDaoSupport implements EmployeeDAO {
     @Override
     public Employee get(long empId) {
         String query = EMP_LIST_QUERY + " WHERE emp_id=?";
+        logDebugMessage("Employee list =", query);
         return (Employee) getJdbcTemplate().queryForObject(query, new Object[]{empId}, new EmpRowMapper());
+    }
+
+    private void logDebugMessage(String message, String query) {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug(message + query);
+        }
     }
 
     @Override
     public List<Employee> list() {
+        logDebugMessage("Employee list =", EMP_LIST_QUERY);
         return getJdbcTemplate().query(EMP_LIST_QUERY, new EmpRowMapper());
     }
 
@@ -63,6 +76,7 @@ public class EmployeeDAOImpl extends JdbcDaoSupport implements EmployeeDAO {
             Object[] values = new Object[]{employee.getFirstname(), employee.getLastname(), employee.getBirthDate(), employee.getDeptId()}; // NOPMD
             employeeBatch.add(values);
         }
+        logDebugMessage("Employee batch update query=", INSERT_QUERY);
         return getJdbcTemplate().batchUpdate(INSERT_QUERY, employeeBatch);
     }
 
