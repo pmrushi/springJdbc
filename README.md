@@ -1,4 +1,4 @@
 springJdbc
 ==========
 
-SpringJdbc with Postgressql
+SpringJdbc with Postgressql project.
